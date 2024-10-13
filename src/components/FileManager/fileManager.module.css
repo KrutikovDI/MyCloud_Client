@@ -1,0 +1,9 @@
+.form{
+    /* display: inline-block; */
+}
+
+.button{
+    /* margin-top: 10px; */
+    height: 25px;
+    width: 200px;
+}
