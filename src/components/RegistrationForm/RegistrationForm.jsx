@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import classes from './registrationForm.module.css'
 import { useNavigate  } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchUserRegister, userAuthenticated, userfullName } from '../../redux/slices/userSlice'
+import { fetchUserRegister, userAuthenticated, userfullName, userLogin } from '../../redux/slices/userSlice'
 import ModalError from '../ModalError/ModalError';
 
 const RegistrationForm = () => {
@@ -43,6 +43,7 @@ const RegistrationForm = () => {
       } else {
         dispatch(userAuthenticated())
         dispatch(userfullName(fullName))
+        dispatch(userLogin(login))
         navigate('/')
       }
     })

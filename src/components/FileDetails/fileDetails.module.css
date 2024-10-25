@@ -1,0 +1,56 @@
+.field{
+    border: 3px solid rgb(137, 137, 137);
+    padding: 5px;
+    display: flex;
+}
+
+.details{
+    width: 90%;
+}
+
+.file{
+    font-size: larger;
+    font-weight: bold; 
+    text-decoration: none;
+    color: rgb(31, 92, 207);
+}
+
+.file:hover{
+    text-decoration: underline
+}
+
+.comment{
+    background-color: bisque;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+}
+
+.p{
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: 20px;
+    font-weight: normal ;
+}
+
+.delete{
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.button{
+    height: 32%;
+    width: 100%;
+    font-size: 10px;
+}
+
+.copySuccess{
+    color: white;
+    background-color: red;
+    position: absolute;
+    font-size: 12px;
+    left: -15px;
+    top: -20px;
+}

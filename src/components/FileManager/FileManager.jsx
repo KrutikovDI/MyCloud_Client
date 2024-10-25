@@ -1,60 +1,119 @@
-import React, { useEffect, useState } from 'react'
-import classes from './fileManager.module.css'
+import React, { useEffect, useState } from 'react';
+import { useSelector } from "react-redux";
+import FileDetails from '../FileDetails/FileDetails'
+import ModalRename from '../ModalRename/ModalRename';
+import ModalDelete from '../ModalDelete/ModalDelete';
+import ModalError from '../ModalError/ModalError';
+
+import classes from './fileManager.module.css';
 
 const FileManager = () => {
 
-    const [files, setFiles] = useState([]);
-    const [selectedFile, setSelectedFile] = useState(null);
-    const [uploadStatus, setUploadStatus] = useState('')
+    const { login } = useSelector(state => state.user)
+    const [form, setForm] = useState({
+      media: null,
+      comment: '',
+      updateFile: null,
+      deleteFile: null,
+      error: null,
+    });
+    const [files, setFiles] = useState([])
+    const [uploadStatus, setUploadStatus] = useState('');
 
-    const handleFileSelect = (e) => {
-        console.log(e.target.files[0])
-        setSelectedFile(e.target.files);
+    const handleChange = (e) => {
+        setUploadStatus('')
+        const { name, type, value, files } = e.target;
+        type === 'file'
+        ? setForm((prevForm) => ({ ...prevForm, [name]: files[0] }))
+        : setForm((prevForm) => ({ ...prevForm, [name]: value }))
     };
     
-    const handleFileUpload = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if(!selectedFile) {
+        if(!form.media) {
             setUploadStatus('Пожалуйста, выберите файл!')
             return
         };
         const formData = new FormData();
-        formData.append('file', selectedFile);
+        formData.append('media', form.media);
+        formData.append('user', login);
+        formData.append('comment', form.comment);
         try {
-          const response = await fetch (import.meta.env.VITE_UPLOAD_URL, {
-            methot: 'POST',
-            boby: formData,
-            headers: {'Content-Type': 'multipart/form-data',},
+          const response = await fetch (import.meta.env.VITE_FILES_URL, {
+            method: 'POST',
+            body: formData,
           })
-            if (!response.ok) {
-              setUploadStatus('Ошибка при загрузке файла')
-            } else {
-              setUploadStatus('Файл успешно загружен');
-              fetchFiles()
-            }
+          // console.log(response)
+          if (!response.ok) {
+            setUploadStatus('Ошибка при загрузке файла')
+          } else {
+            setUploadStatus('Файл успешно загружен');
+            fetchFiles()
+            setTimeout(() => {
+              setUploadStatus('')
+              setForm((prevForm) => ({...prevForm, media: null, comment: ''}))
+            }, 2000);
+          }
         } catch (error) {
           console.error('Ошибка при загрузке файла на сервер:', error)
         }
     };
 
-    const fetchFiles = () => {
+    const fetchFiles = async () => {
       try {
-        const response = fetch (import.meta.env.VITE_UPLOAD_FILES)
-        .then(
-          setFiles(response.data),
-        )
+        const response = await fetch (import.meta.env.VITE_FILES_URL)
+        const response_json = await response.json()
+        // console.log(response_json)
+        setFiles(response_json)
       } catch (error) {
-        console.log('ОШИБКА')
         console.error('Ошибка при получении файлов:', error)
       }
     };
-    
-    const handleDeleteFile = async (fileName) => {
+
+    const handleUpdateFile = (file) => {
+      console.log(file.media_name)
+      if (file.media_name) {
+        setForm((prevForm) => ({...prevForm, renameFile: file}))
+      } else {
+        setForm((prevForm) => ({...prevForm, deleteFile: file}))
+      }      
+    };
+
+    const handleRename = async (data) => {
+      // console.log(data)
       try {
-        await fetch (import.meta.env.VITE_UPLOAD_DELETE, {
+        const response = await fetch (import.meta.env.VITE_FILES_URL + data.id + '/rename/', {
+          method: 'POST',
+          body: JSON.stringify({ newName: data.name }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        // console.log(await response.json())
+      } catch (error) {
+        console.error('Ошибка обновления имени файла:', error)
+      };
+      setForm((prevForm) => ({...prevForm, renameFile: null}));
+      fetchFiles();
+    };
+    
+
+    const handleDelete = async () => {
+      try {
+        await fetch (import.meta.env.VITE_FILES_URL + form.deleteFile + '/', {
           method: 'DELETE',
-        })
-      } catch (error) {console.error('Ошибка при удалении файла:', error);}
+        });
+        fetchFiles();
+      } catch (error) {
+        console.error('Ошибка при удалении файла:', error);
+        setForm((prevForm) => ({...prevForm, error: 'Ошибка при удалении файла'}))
+      }
+      setForm((prevForm) => ({...prevForm, deleteFile: null}));
+      fetchFiles();
+    };
+
+    const handleModalClose = () => {
+      setForm((prevForm) => ({...prevForm, renameFile: null, deleteFile: null, error: null}))
     };
 
     useEffect(() => {
@@ -63,20 +122,41 @@ const FileManager = () => {
 
   return (
     <div>
-      <form className={classes['form']} onSubmit={handleFileUpload}>
-        <p>
-
-        </p>
-        <input className={classes['inputUpload']} type="file" multiple onChange={handleFileSelect}/>
-        <button className={classes['button']} type='submit'>Загрузить</button>
-        {uploadStatus && <p>{uploadStatus}</p>}
+      <form className={classes['form']} onSubmit={handleSubmit}>
+        <label className={classes['label']}>
+          Выберите файл для загрузки
+          <input type="file" name='media' className={classes['input']} onChange={handleChange}/>
+        </label>
+        <label className={classes['label']} htmlFor="comment">
+          Комментарий к файлу
+          <input type="text" name='comment' className={classes['input']} value={form.comment} onChange={handleChange}/>
+        </label>
+        <div className={classes['submit']}>
+          {uploadStatus
+          ? <p className={classes['p']}>{uploadStatus}</p>
+          : <button className={classes['button']} type='submit'>Загрузить</button>}
+        </div>
       </form>
+      {form.renameFile ? <ModalRename file={{
+        file: form.renameFile,
+        handleRename,
+        handleModalClose,
+        }}/> : ''}
+      {form.deleteFile ? <ModalDelete file={{
+        handleDelete,
+        handleModalClose,
+      }}/> : ''}
+      {form.error ? <ModalError context={[
+        error, handleModalClose
+        ]}/> : ''}
       <h2>Список загруженных файлов</h2>
       <ul className={classes['ul']}>
         {files.map((file, i) => (
           <li className={classes['li']} key={i}>
-            <a className={classes['a']} href={''} target="_blank">{file}</a>
-            <button className={classes['button']} onClick={() => {handleDeleteFile(file)}}>Удалить</button>
+            <FileDetails item={{
+              file,
+              handleUpdateFile,
+              }}/>
           </li>
         ))}
       </ul>

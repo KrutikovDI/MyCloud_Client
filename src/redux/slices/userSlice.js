@@ -1,7 +1,7 @@
 import { buildCreateSlice, asyncThunkCreator } from "@reduxjs/toolkit";
 
 const initialState = {
-    // login: '',
+    login: '',
     fullName: '',
     // email: '',
     // password: '',
@@ -26,6 +26,9 @@ export const userSlice = createSliceWithThunk({
         }),
         userfullName: create.reducer((state, action) => {
           state.fullName = action.payload;
+        }),
+        userLogin: create.reducer((state, action)=> {
+          state.login = action.payload
         }),
         fetchUserLogin: create.asyncThunk(
             async ( loginPassword, { rejectWithValue }) => {
@@ -60,8 +63,9 @@ export const userSlice = createSliceWithThunk({
                 },
                 fulfilled: (state, action) => {
                   // console.log('fulfilled')
-                  // console.log(action.payload.data['fullName'])
+                  // console.log(action.payload.data['login'])
                   state.fullName = action.payload.data['fullName']
+                  state.login = action.payload.data['login']
                   // state.error = "";
                 },
                 rejected: (state, action) => {
@@ -112,6 +116,6 @@ export const userSlice = createSliceWithThunk({
     })
 })
 
-export const { userAuthenticated, userfullName, fetchUserLogin, fetchUserRegister } = userSlice.actions;
+export const { userAuthenticated, userfullName, userLogin, fetchUserLogin, fetchUserRegister } = userSlice.actions;
 export const { userState } = userSlice.selectors;
 export default userSlice.reducer;

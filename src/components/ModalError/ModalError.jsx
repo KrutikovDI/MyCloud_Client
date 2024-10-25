@@ -1,23 +1,14 @@
 import React from 'react'
 import classes from './modalError.module.css'
+import Modal from '../Modal/Modal'
 
 const ModalError = (props) => {
   const  [ textMessage, hendleModal ]  = props.context
   return (
-<div id="myModal" className={classes['modal']}>
-  <div className={classes["modal-content"]}>
-    <div className={classes["modal-header"]}>
-      <span className={classes["close"]} onClick={hendleModal}>&times;</span>
-      <h2>ОШИБКА</h2>
-    </div>
-    <div className={classes["modal-body"]}>
+    <Modal header={'ОШИБКА'} type={'error'}>
       <p>{textMessage}</p>
-    </div>
-    <div className={classes["modal-footer"]}>
-      <h3>Попробуйте еще раз</h3>
-    </div>
-  </div>
-</div>
+      <button className={classes["close"]} onClick={hendleModal}>ЗАКРЫТЬ</button>
+    </Modal>
   )
 }
 

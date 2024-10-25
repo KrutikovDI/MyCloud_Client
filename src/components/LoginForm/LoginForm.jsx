@@ -38,7 +38,6 @@ const LoginForm = () => {
     if (response.payload.status != 200) {
       setForm(prevForm => ({...prevForm, error: true, textMessage: response.payload}))
     } else {
-      console.log(response.payload)
       dispatch(userAuthenticated())
       navigate('/')
     }
