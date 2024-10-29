@@ -5,6 +5,7 @@ const initialState = {
     fullName: '',
     // email: '',
     // password: '',
+    // accessToken: '',
     loading: false,
     // error: '',
     isAuthenticated: false,
@@ -33,24 +34,24 @@ export const userSlice = createSliceWithThunk({
         fetchUserLogin: create.asyncThunk(
             async ( loginPassword, { rejectWithValue }) => {
                 try {
-                    const response = await fetch(import.meta.env.VITE_ENTER_URL, {
+                    const response = await fetch(import.meta.env.VITE_LOGIN_URL, {
                         method: 'POST',
                         body: JSON.stringify(loginPassword),
                         headers: {
                           'Content-type': 'application/json; charset=UTF-8',
                         },
                     });
-                    if (!response.ok) {
-                      if (response.status === 500) {
-                        return rejectWithValue('Пользователь с таким логином не найден!')
-                      } else if (response.status === 401) {
-                        return rejectWithValue('Неверный пароль!')
-                      } else if (response.status === 402) {
-                        return rejectWithValue('Права администратора отсутствуют!')
-                      }
-                    }
                     const data = await response.json()
-                    return {status: response.status, data}
+                    console.log(data)
+                    if (response.status === 200) {
+                      return {status: response.status, data}
+                    }
+                    if (response.status === 400) {
+                      return rejectWithValue(data.error[0])
+                    }
+                    if (response.status === 500) {
+                      return rejectWithValue(data.error[0])
+                    }
                 } catch (e) {
                     return rejectWithValue('сервер не доступен!');
                 }
@@ -66,6 +67,7 @@ export const userSlice = createSliceWithThunk({
                   // console.log(action.payload.data['login'])
                   state.fullName = action.payload.data['fullName']
                   state.login = action.payload.data['login']
+                  // state.accessToken = action.payload.data['access']
                   // state.error = "";
                 },
                 rejected: (state, action) => {
@@ -89,7 +91,7 @@ export const userSlice = createSliceWithThunk({
                       },
                   });
                   if (!response.ok) {
-                      return rejectWithValue('Пользователь с таким логином уже сущетсвует')
+                      return rejectWithValue('Пользователь с таким логином уже существует')
                   }
                   return response.status
               } catch (e) {

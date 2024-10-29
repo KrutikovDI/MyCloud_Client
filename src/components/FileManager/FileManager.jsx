@@ -63,7 +63,7 @@ const FileManager = () => {
       try {
         const response = await fetch (import.meta.env.VITE_FILES_URL)
         const response_json = await response.json()
-        // console.log(response_json)
+        console.log(response_json)
         setFiles(response_json)
       } catch (error) {
         console.error('Ошибка при получении файлов:', error)
