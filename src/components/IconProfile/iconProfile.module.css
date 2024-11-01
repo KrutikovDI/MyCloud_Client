@@ -1,0 +1,25 @@
+.profile{
+    display: flex;
+    align-items: center;
+    justify-content: right;
+}
+
+.icon{
+    height: 20px;
+    border: 1px solid;
+    border-radius: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    color: white;
+    margin-right: 5px;
+}
+
+.admin{
+    background-color: brown;
+    border: brown;
+}
+
+.user{
+    background-color: rgb(55, 190, 61);
+    border: rgb(55, 190, 61);
+}

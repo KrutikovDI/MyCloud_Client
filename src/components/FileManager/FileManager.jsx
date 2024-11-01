@@ -4,21 +4,20 @@ import FileDetails from '../FileDetails/FileDetails'
 import ModalRename from '../ModalRename/ModalRename';
 import ModalDelete from '../ModalDelete/ModalDelete';
 import ModalError from '../ModalError/ModalError';
-
 import classes from './fileManager.module.css';
 
 const FileManager = () => {
 
-    const { login } = useSelector(state => state.user)
-    const [form, setForm] = useState({
+    const { login, token } = useSelector(state => state.user)
+    const [ form, setForm ] = useState({
       media: null,
       comment: '',
       updateFile: null,
       deleteFile: null,
       error: null,
     });
-    const [files, setFiles] = useState([])
-    const [uploadStatus, setUploadStatus] = useState('');
+    const [ files, setFiles ] = useState([])
+    const [ uploadStatus, setUploadStatus ] = useState('');
 
     const handleChange = (e) => {
         setUploadStatus('')
@@ -36,24 +35,26 @@ const FileManager = () => {
         };
         const formData = new FormData();
         formData.append('media', form.media);
-        formData.append('user', login);
         formData.append('comment', form.comment);
         try {
           const response = await fetch (import.meta.env.VITE_FILES_URL, {
             method: 'POST',
             body: formData,
+            headers: {
+              'Authorization': `Token ${token}`
+            }            
           })
-          // console.log(response)
           if (!response.ok) {
             setUploadStatus('Ошибка при загрузке файла')
           } else {
             setUploadStatus('Файл успешно загружен');
             fetchFiles()
+          }
             setTimeout(() => {
               setUploadStatus('')
               setForm((prevForm) => ({...prevForm, media: null, comment: ''}))
             }, 2000);
-          }
+          
         } catch (error) {
           console.error('Ошибка при загрузке файла на сервер:', error)
         }
@@ -61,17 +62,26 @@ const FileManager = () => {
 
     const fetchFiles = async () => {
       try {
-        const response = await fetch (import.meta.env.VITE_FILES_URL)
+        const response = await fetch (import.meta.env.VITE_FILES_URL, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Token ${token}`,
+          },
+        });
         const response_json = await response.json()
         console.log(response_json)
-        setFiles(response_json)
+        if (response.status != 200) {
+          setForm((prevForm) => ({...prevForm, error: response_json.detail}))
+          console.error(response_json)
+        } else {
+          setFiles(response_json)
+        }
       } catch (error) {
         console.error('Ошибка при получении файлов:', error)
       }
     };
 
     const handleUpdateFile = (file) => {
-      console.log(file.media_name)
       if (file.media_name) {
         setForm((prevForm) => ({...prevForm, renameFile: file}))
       } else {
@@ -80,16 +90,15 @@ const FileManager = () => {
     };
 
     const handleRename = async (data) => {
-      // console.log(data)
       try {
         const response = await fetch (import.meta.env.VITE_FILES_URL + data.id + '/rename/', {
           method: 'POST',
           body: JSON.stringify({ newName: data.name }),
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`,
           },
         });
-        // console.log(await response.json())
       } catch (error) {
         console.error('Ошибка обновления имени файла:', error)
       };
@@ -102,6 +111,9 @@ const FileManager = () => {
       try {
         await fetch (import.meta.env.VITE_FILES_URL + form.deleteFile + '/', {
           method: 'DELETE',
+          headers: {
+            'Authorization': `Token ${token}`,
+          }
         });
         fetchFiles();
       } catch (error) {
@@ -147,7 +159,7 @@ const FileManager = () => {
         handleModalClose,
       }}/> : ''}
       {form.error ? <ModalError context={[
-        error, handleModalClose
+        form.error, handleModalClose
         ]}/> : ''}
       <h2>Список загруженных файлов</h2>
       <ul className={classes['ul']}>

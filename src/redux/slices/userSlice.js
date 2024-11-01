@@ -3,12 +3,11 @@ import { buildCreateSlice, asyncThunkCreator } from "@reduxjs/toolkit";
 const initialState = {
     login: '',
     fullName: '',
-    // email: '',
+    is_active: false,
     // password: '',
-    // accessToken: '',
+    token: '',
     loading: false,
     // error: '',
-    isAuthenticated: false,
 };
 
 const createSliceWithThunk = buildCreateSlice({
@@ -22,15 +21,15 @@ export const userSlice = createSliceWithThunk({
         userState: (state) => state.user,
     },
     reducers: (create) =>({
-        userAuthenticated: create.reducer((state) => {
-          state.isAuthenticated = true;
-        }),
-        userfullName: create.reducer((state, action) => {
-          state.fullName = action.payload;
-        }),
-        userLogin: create.reducer((state, action)=> {
-          state.login = action.payload
-        }),
+        // userAuthenticated: create.reducer((state) => {
+        //   state.isAuthenticated = true;
+        // }),
+        // userfullName: create.reducer((state, action) => {
+        //   state.fullName = action.payload;
+        // }),
+        // userLogin: create.reducer((state, action)=> {
+        //   state.login = action.payload
+        // }),
         fetchUserLogin: create.asyncThunk(
             async ( loginPassword, { rejectWithValue }) => {
                 try {
@@ -42,7 +41,6 @@ export const userSlice = createSliceWithThunk({
                         },
                     });
                     const data = await response.json()
-                    console.log(data)
                     if (response.status === 200) {
                       return {status: response.status, data}
                     }
@@ -63,11 +61,10 @@ export const userSlice = createSliceWithThunk({
                   // state.error = "";
                 },
                 fulfilled: (state, action) => {
-                  // console.log('fulfilled')
-                  // console.log(action.payload.data['login'])
                   state.fullName = action.payload.data['fullName']
                   state.login = action.payload.data['login']
-                  // state.accessToken = action.payload.data['access']
+                  state.token = action.payload.data['token']
+                  state.is_active = action.payload.data['is_active']
                   // state.error = "";
                 },
                 rejected: (state, action) => {
@@ -90,10 +87,11 @@ export const userSlice = createSliceWithThunk({
                         'Content-type': 'application/json; charset=UTF-8',
                       },
                   });
+                  const data = await response.json()
                   if (!response.ok) {
-                      return rejectWithValue('Пользователь с таким логином уже существует')
+                      return rejectWithValue(data.login[0])
                   }
-                  return response.status
+                  return {status: response.status, data}
               } catch (e) {
                   return rejectWithValue('сервер не доступен!');
               }
@@ -104,7 +102,11 @@ export const userSlice = createSliceWithThunk({
                 // state.error = "";
               },
               fulfilled: (state, action) => {
-                // state.login = action.payload;
+                console.log(action.payload.data)
+                state.fullName = action.payload.data['fullName']
+                state.login = action.payload.data['login']
+                state.token = action.payload.data['token']
+                state.is_active = action.payload.data['is_active']
                 // state.error = "";
               },
               rejected: (state, action) => {
@@ -118,6 +120,6 @@ export const userSlice = createSliceWithThunk({
     })
 })
 
-export const { userAuthenticated, userfullName, userLogin, fetchUserLogin, fetchUserRegister } = userSlice.actions;
+export const { fetchUserLogin, fetchUserRegister } = userSlice.actions;
 export const { userState } = userSlice.selectors;
 export default userSlice.reducer;

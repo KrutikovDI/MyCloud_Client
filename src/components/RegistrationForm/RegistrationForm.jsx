@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import classes from './registrationForm.module.css'
 import { useNavigate  } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchUserRegister, userAuthenticated, userfullName, userLogin } from '../../redux/slices/userSlice'
+import { fetchUserRegister } from '../../redux/slices/userSlice'
 import ModalError from '../ModalError/ModalError';
 
 const RegistrationForm = () => {
@@ -18,7 +18,7 @@ const RegistrationForm = () => {
   const { login, fullName, email, password, policy, error, textMessage } = form;
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, isAuthenticated } = useSelector(state => state.user)
+  const { loading } = useSelector(state => state.user)
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -38,12 +38,10 @@ const RegistrationForm = () => {
     dispatch(fetchUserRegister(
       form
     )).then(response => {
-      if (response.payload != 201){
+      console.log(response.payload)
+      if (response.payload.status != 200){
         setForm(prevForm => ({...prevForm, error: true, textMessage: response.payload}))
       } else {
-        dispatch(userAuthenticated())
-        dispatch(userfullName(fullName))
-        dispatch(userLogin(login))
         navigate('/')
       }
     })

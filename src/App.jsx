@@ -6,10 +6,10 @@ import HomePage from './pages/HomePage/'
 import AdminPage from './pages/AdminPage/'
 
 function App() {
-    const { isAuthenticated } = useSelector(state => state.user)
+    const { is_active } = useSelector(state => state.user)
 
     const isAuth = () => {
-      return isAuthenticated === true}
+      return is_active === true}
     const HomePageRoute = ({ children }) => {
       return isAuth() ? children : <Navigate to='/login'/>
     }
