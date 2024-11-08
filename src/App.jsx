@@ -3,7 +3,6 @@ import { Route, Routes, Navigate } from 'react-router-dom'
 import { useSelector } from "react-redux";
 import LoginPage from './pages/LoginPage/'
 import HomePage from './pages/HomePage/'
-import AdminPage from './pages/AdminPage/'
 
 function App() {
     const { is_active } = useSelector(state => state.user)
@@ -19,7 +18,6 @@ function App() {
     <Routes>
       <Route path='/login' element={<LoginPage/>}/>
       <Route path='/' element={<HomePageRoute><HomePage/></HomePageRoute>}/>
-      <Route path='/admin' element={<AdminPage/>}/>
     </Routes>
     </>
   )

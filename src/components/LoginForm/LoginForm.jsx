@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import { NavLink, useNavigate  } from "react-router-dom";
 import classes from './loginForm.module.css'
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUserLogin } from '../../redux/slices/userSlice';
+import { fetchUserLogin, userIsSuperuser, userIsNotSuperuser } from '../../redux/slices/userSlice';
 import ModalError from '../ModalError/ModalError';
 
 
@@ -33,15 +33,16 @@ const LoginForm = () => {
     dispatch(fetchUserLogin({
       login: useLogin,
       password: password,
-      admin: admin,
+      is_superuser: admin,
     })).then(response => {
     if (response.payload.status != 200) {
       setForm(prevForm => ({...prevForm, error: true, textMessage: response.payload}))
     } else {
+      dispatch(userIsNotSuperuser())
+      admin && dispatch(userIsSuperuser())
       navigate('/')
     }
-  })
-  }
+  })}
 
   const hendleModal = () => {
     setForm(prevForm => ({...prevForm, error: false, textMessage: ''}))

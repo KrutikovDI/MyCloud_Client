@@ -2,20 +2,12 @@ import React, { useState } from 'react'
 import classes from './fileDetails.module.css'
 
 const FileDetails = (props) => {
+    console.log('!!!!!!!!!!!!!!!!.............!!!!!!!!!!!!!!!!')
+    console.log(props)
     const { id, media, uploaded_at, comment, size, download_url, last_downloaded, } = props.item.file;
+    
     const { handleUpdateFile } = props.item;
     const [ copySuccess, setCopySuccess ] = useState(false)
-
-    console.log(props.item.file)
-    const formatDate = (serverDate) => {
-        const date = new Date(serverDate);
-        const hours = String(date.getUTCHours()).padStart(2, '0');
-        const minutes = String(date.getUTCMinutes()).padStart(2, '0');
-        const day = String(date.getUTCDate()).padStart(2, '0');
-        const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-        const year = String(date.getUTCFullYear());
-        return `${day}.${month}.${year} ${hours}:${minutes}`;
-      };
 
     const formatBytes = (bytes, decimals = 2) => {
         if (bytes === 0) {
@@ -27,7 +19,17 @@ const FileDetails = (props) => {
             let i = Math.floor(Math.log(bytes) / Math.log(k));
             return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
         }
-    }
+    };
+    
+    const formatDate = (serverDate) => {
+        const date = new Date(serverDate);
+        const hours = String(date.getUTCHours()).padStart(2, '0');
+        const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+        const day = String(date.getUTCDate()).padStart(2, '0');
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+        const year = String(date.getUTCFullYear());
+        return `${day}.${month}.${year} ${hours}:${minutes}`;
+      };
 
     const media_name = decodeURIComponent(media.split('/').pop()).replace(/__/g, ' ')
 
@@ -68,6 +70,6 @@ const FileDetails = (props) => {
         </div>
     </div>
   )
-}
+};
 
-export default FileDetails
+export default FileDetails;

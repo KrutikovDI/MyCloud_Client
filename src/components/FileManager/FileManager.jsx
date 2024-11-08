@@ -69,16 +69,13 @@ const FileManager = () => {
           },
         });
         const response_json = await response.json()
-        console.log(response_json)
         if (response.status != 200) {
           setForm((prevForm) => ({...prevForm, error: response_json.detail}))
           console.error(response_json)
         } else {
           setFiles(response_json)
         }
-      } catch (error) {
-        console.error('Ошибка при получении файлов:', error)
-      }
+      } catch (error) {console.error('Ошибка при получении файлов:', error)}
     };
 
     const handleUpdateFile = (file) => {

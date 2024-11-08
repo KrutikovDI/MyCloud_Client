@@ -4,6 +4,7 @@ const initialState = {
     login: '',
     fullName: '',
     is_active: false,
+    is_superuser: false,
     // password: '',
     token: '',
     loading: false,
@@ -21,15 +22,12 @@ export const userSlice = createSliceWithThunk({
         userState: (state) => state.user,
     },
     reducers: (create) =>({
-        // userAuthenticated: create.reducer((state) => {
-        //   state.isAuthenticated = true;
-        // }),
-        // userfullName: create.reducer((state, action) => {
-        //   state.fullName = action.payload;
-        // }),
-        // userLogin: create.reducer((state, action)=> {
-        //   state.login = action.payload
-        // }),
+      userIsSuperuser: create.reducer((state) => {
+        state.is_superuser = true;
+      }),
+      userIsNotSuperuser: create.reducer((state) => {
+        state.is_superuser = false;
+      }),
         fetchUserLogin: create.asyncThunk(
             async ( loginPassword, { rejectWithValue }) => {
                 try {
@@ -41,6 +39,7 @@ export const userSlice = createSliceWithThunk({
                         },
                     });
                     const data = await response.json()
+                    console.log(data)
                     if (response.status === 200) {
                       return {status: response.status, data}
                     }
@@ -56,7 +55,6 @@ export const userSlice = createSliceWithThunk({
             },
             {
                 pending: (state) => {
-                  // console.log('pending')
                   state.loading = true;
                   // state.error = "";
                 },
@@ -68,11 +66,9 @@ export const userSlice = createSliceWithThunk({
                   // state.error = "";
                 },
                 rejected: (state, action) => {
-                  // console.log('rejected')
                   // state.error = action.payload;
                 },
                 settled: (state) => {
-                  // console.log('settled')
                   state.loading = false;
                 },
               }
@@ -88,6 +84,7 @@ export const userSlice = createSliceWithThunk({
                       },
                   });
                   const data = await response.json()
+                  console.log(data)
                   if (!response.ok) {
                       return rejectWithValue(data.login[0])
                   }
@@ -102,7 +99,6 @@ export const userSlice = createSliceWithThunk({
                 // state.error = "";
               },
               fulfilled: (state, action) => {
-                console.log(action.payload.data)
                 state.fullName = action.payload.data['fullName']
                 state.login = action.payload.data['login']
                 state.token = action.payload.data['token']
@@ -120,6 +116,6 @@ export const userSlice = createSliceWithThunk({
     })
 })
 
-export const { fetchUserLogin, fetchUserRegister } = userSlice.actions;
+export const { fetchUserLogin, fetchUserRegister, userIsSuperuser, userIsNotSuperuser } = userSlice.actions;
 export const { userState } = userSlice.selectors;
 export default userSlice.reducer;

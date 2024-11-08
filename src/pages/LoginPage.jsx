@@ -11,7 +11,6 @@ const LoginPage = () => {
 
     const handleRegistration = () => {setAauth(preForm => ({...preForm, registration: true, login: false, admin: false}))}
     const handleLogin = () => {setAauth(preForm => ({...preForm, registration: false, login: true, admin: false}))}
-    const handleAdmin = () => {setAauth(preForm => ({...preForm, registration: false, login: true, admin: true}))}
 
   return (
     <>
