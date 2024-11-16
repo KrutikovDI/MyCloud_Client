@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import classes from './registrationForm.module.css'
 import { useNavigate  } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchUserRegister } from '../../redux/slices/userSlice'
+import { fetchUserRegister, userIsNotSuperuser } from '../../redux/slices/userSlice'
 import ModalError from '../ModalError/ModalError';
 
 const RegistrationForm = () => {
@@ -42,6 +42,7 @@ const RegistrationForm = () => {
       if (response.payload.status != 200){
         setForm(prevForm => ({...prevForm, error: true, textMessage: response.payload}))
       } else {
+        dispatch(userIsNotSuperuser())
         navigate('/')
       }
     })

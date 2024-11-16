@@ -39,7 +39,6 @@ export const userSlice = createSliceWithThunk({
                         },
                     });
                     const data = await response.json()
-                    console.log(data)
                     if (response.status === 200) {
                       return {status: response.status, data}
                     }

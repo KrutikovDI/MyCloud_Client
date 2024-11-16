@@ -2,8 +2,6 @@ import React, { useState } from 'react'
 import classes from './fileDetails.module.css'
 
 const FileDetails = (props) => {
-    console.log('!!!!!!!!!!!!!!!!.............!!!!!!!!!!!!!!!!')
-    console.log(props)
     const { id, media, uploaded_at, comment, size, download_url, last_downloaded, } = props.item.file;
     
     const { handleUpdateFile } = props.item;

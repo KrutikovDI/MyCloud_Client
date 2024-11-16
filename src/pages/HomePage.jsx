@@ -14,7 +14,7 @@ const HomePage = () => {
       <nav><NavigateMenu refer={{login: '/', exit: '/login', registration: '/login'}}/></nav>
       <IconProfile name={fullName} is_superuser={is_superuser}/>
       {is_superuser && <UsersList/>}
-      <FileManager/>
+      {!is_superuser && <FileManager/>}
       </>
   )
 }
