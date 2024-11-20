@@ -45,8 +45,6 @@ const FileList = ({token, freshFiles, userId, fullName}) => {
   };
   
   const handleRename = async (data) => {
-    console.log(import.meta.env.VITE_FILES_URL + data.id + '/rename/')
-    console.log(`новое название ${data.name}`)
     try {
       const response = await fetch (import.meta.env.VITE_FILES_URL + data.id + '/rename/', {
         method: 'POST',
@@ -66,8 +64,9 @@ const FileList = ({token, freshFiles, userId, fullName}) => {
   
   
   const handleDelete = async () => {
+    console.log(import.meta.env.VITE_FILES_URL + form.deleteFile + '/delete/')
     try {
-      await fetch (import.meta.env.VITE_FILES_URL + form.deleteFile, {
+      await fetch (import.meta.env.VITE_FILES_URL + form.deleteFile + '/delete/', {
         method: 'DELETE',
         headers: {
           'Authorization': `Token ${token}`,
